@@ -4,7 +4,6 @@ import numpy as np
 import collections
 import theano
 import theano.tensor as tensor
-from theano.tensor.nnet import conv, conv3d2d, sigmoid
 from theano.tensor.signal import pool
 
 trainable_params = []
@@ -319,12 +318,9 @@ class ConvLayer(Layer):
             padded_input = self._prev_layer.output
             padded_input_shape = self._input_shape
 
-        conv_out = conv.conv2d(
             input=padded_input,
             filters=self.W.val,
             filter_shape=self._filter_shape,
-            image_shape=np.asarray(
-                padded_input_shape, dtype=np.int16),
             border_mode='valid')
 
         # add the bias term. Since the bias is a vector (1D array), we first
@@ -349,9 +345,9 @@ class PoolLayer(Layer):
     def set_output(self):
         pooled_out = pool.pool_2d(
             input=self._prev_layer.output,
-            ds=self._pool_size,
+            ws=self._pool_size,
             ignore_border=True,
-            padding=self._padding)
+            pad=self._padding)
         self._output = pooled_out
 
 
